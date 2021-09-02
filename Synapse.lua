@@ -1,8 +1,8 @@
 -- Main Usage
 --Decryption:
-print(syn.crypt.custom.decrypt("aes-gcm","jbb6QoWiK6tB4ZEWU+nei5mQgmyiMQ==","0123456789ABCDEF0123456789ABCDEF","0123456789ABCDEF"))
+print(syn.crypt.custom.decrypt("aes-gcm","lyiAqsYTgCuWO0WcO7HKJ8IqZwwZWg==","0123456789ABCDEF0123456789ABCDEF","0123456789AB"))
 --Encryption:
-print(syn.crypt.custom.encrypt("aes-gcm","ROBLOX","0123456789ABCDEF0123456789ABCDEF","0123456789ABCDEF"))
+print(syn.crypt.custom.encrypt("aes-gcm","YO SUP","0123456789ABCDEF0123456789ABCDEF","0123456789AB"))
 
 -- Constructor format
 local SynAES = function(key)

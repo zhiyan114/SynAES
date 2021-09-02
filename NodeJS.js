@@ -33,5 +33,5 @@ class SynAES {
 
 // Example Usages
 const crypt = new SynAES("0123456789ABCDEF0123456789ABCDEF")
-console.log(crypt.decrypt("hraYXZ+qvP5dYceEIoP+ZVbhZqbaUw==","0123456789ABCDEF"))
-console.log(crypt.encrypt("YO SUP","0123456789ABCDEF"))
+console.log(crypt.decrypt("lyiAqsYTgCuWO0WcO7HKJ8IqZwwZWg==","0123456789AB"))
+console.log(crypt.encrypt("YO SUP","0123456789AB"))

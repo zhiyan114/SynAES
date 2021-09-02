@@ -21,5 +21,5 @@ end
 
 -- Example Usages
 local crypt = SynAES("0123456789ABCDEF0123456789ABCDEF")
-print(crypt.encrypt("ROBLOX","0123456789ABCDEF"))
-print(crypt.decrypt("jbb6QoWiK6tB4ZEWU+nei5mQgmyiMQ==","0123456789ABCDEF"))
+print(crypt.encrypt("YO SUP","0123456789AB"))
+print(crypt.decrypt("lyiAqsYTgCuWO0WcO7HKJ8IqZwwZWg==","0123456789AB"))

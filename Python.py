@@ -27,5 +27,5 @@ class SynAES:
 
 # Example Usages
 crypt = SynAES("0123456789ABCDEF0123456789ABCDEF")
-print(crypt.encrypt("YO SUP","0123456789ABCDEF"))
-print(crypt.decrypt("hraYXZ+qvP5dYceEIoP+ZVbhZqbaUw==","0123456789ABCDEF"))
+print(crypt.encrypt("YO SUP","0123456789AB"))
+print(crypt.decrypt("lyiAqsYTgCuWO0WcO7HKJ8IqZwwZWg==","0123456789AB"))

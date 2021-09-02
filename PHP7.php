@@ -30,7 +30,7 @@ class SynAES {
 
 # Example Usages
 $crypt = new SynAES("0123456789ABCDEF0123456789ABCDEF");
-echo $crypt->encrypt("YO SUP","0123456789ABCDEF");
+echo $crypt->encrypt("YO SUP","0123456789AB");
 echo "\n";
-echo $crypt->decrypt("hraYXZ+qvP5dYceEIoP+ZVbhZqbaUw==","0123456789ABCDEF")
+echo $crypt->decrypt("lyiAqsYTgCuWO0WcO7HKJ8IqZwwZWg==","0123456789AB")
 ?>

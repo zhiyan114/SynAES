@@ -9,6 +9,6 @@ class SynAES {
       std::string encrypt(std::string Data, std::string IV);
       std::string decrypt(std::string Data, std::string IV);
     private:
-      const unsigned char* key;
+      unsigned char key[32];
       const EVP_CIPHER* CipherType;
 };

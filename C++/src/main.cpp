@@ -42,15 +42,15 @@ void specstrcpy(char* dest,const char* src, int len) {
 std::string SynAES::decrypt(std::string Data, std::string IV) {
     std::vector<BYTE> MainDataAndTag = base64_decode(Data);
     const unsigned char* ConstDataTag = MainDataAndTag.data();
-    unsigned char* MainData = new unsigned char[strlen((const char*)ConstDataTag)-16];
-    unsigned char* MainTag = new unsigned char[16];
-    std::strncpy(reinterpret_cast<char*>(MainData),reinterpret_cast<const char*>(ConstDataTag),strlen((const char*)ConstDataTag)-16); //const_cast
-    std::strncpy(reinterpret_cast<char*>(MainTag),reinterpret_cast<const char*>(&ConstDataTag[strlen((const char*)ConstDataTag)-16]),16);
+    char* MainData = new char[strlen((const char*)ConstDataTag)-16];
+    char* MainTag = new char[16];
+    std::strncpy(MainData,reinterpret_cast<const char*>(ConstDataTag),strlen((const char*)ConstDataTag)-16); //const_cast
+    std::strncpy(MainTag,reinterpret_cast<const char*>(&ConstDataTag[strlen((const char*)ConstDataTag)-16]),16);
     EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
     EVP_DecryptInit_ex(ctx, CipherType, NULL, key, (unsigned char*)IV.c_str());
-    unsigned char PlainTxt[strlen((const char*)MainData)];
+    unsigned char PlainTxt[strlen(MainData)];
     int OutputLen;
-    EVP_DecryptUpdate(ctx, PlainTxt, &OutputLen, const_cast<const unsigned char *>(MainData), strlen((const char*)MainData));
+    EVP_DecryptUpdate(ctx, PlainTxt, &OutputLen, reinterpret_cast<const unsigned char *>(MainData), strlen(MainData));
     EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_AEAD_SET_TAG, 16, (void*)MainTag);
     int TagValid = EVP_DecryptFinal_ex(ctx, PlainTxt, &OutputLen);
     EVP_CIPHER_CTX_free(ctx);

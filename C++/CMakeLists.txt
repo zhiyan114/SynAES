@@ -4,7 +4,7 @@ set(MAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Setup the projects
-project(SynAES VERSION 1.0)
+project(SynapseAES VERSION 1.0)
 
 # Setup the configurations
 #SET(SENTRY_BACKEND crashpad CACHE STRING "Sentry Backend" FORCE)

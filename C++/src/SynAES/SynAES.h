@@ -3,7 +3,9 @@
 #include <openssl/bio.h>
 #include <openssl/evp.h>
 
-class SynAES {
+#define DllExport __declspec(dllexport)
+
+class DllExport SynAES {
     public:
       SynAES(std::string Key);
       std::string encrypt(std::string Data, std::string IV);

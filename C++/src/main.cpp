@@ -26,13 +26,15 @@ SynAES::SynAES(std::string MainKey) {
 std::string SynAES::encrypt(std::string Data, std::string IV) {
     EVP_CIPHER_CTX * ctx = EVP_CIPHER_CTX_new();
     EVP_EncryptInit_ex(ctx, CipherType, NULL, key, (unsigned char*)IV.c_str());
-    unsigned char CipherTxt[strlen(Data.c_str())+16];
+    unsigned char* CipherTxt = (unsigned char*)std::calloc(strlen(Data.c_str())+16,sizeof(*CipherTxt));
     int CipherSize;
     EVP_EncryptUpdate(ctx, CipherTxt, &CipherSize, (unsigned char*)Data.c_str(), strlen(Data.c_str()));
     EVP_EncryptFinal_ex(ctx, CipherTxt, &CipherSize);
     EVP_CIPHER_CTX_ctrl(ctx,EVP_CTRL_AEAD_GET_TAG, 16, &CipherTxt[strlen(Data.c_str())]);
     EVP_CIPHER_CTX_free(ctx);
-    return base64_encode(CipherTxt,sizeof(CipherTxt));
+    std::string ReturnData = base64_encode(CipherTxt,strlen(Data.c_str())+16);
+    std::free(CipherTxt);
+    return ReturnData;
 }
 std::string SynAES::decrypt(std::string Data, std::string IV) {
     std::vector<BYTE> MainDataAndTag = base64_decode(Data);
@@ -43,18 +45,20 @@ std::string SynAES::decrypt(std::string Data, std::string IV) {
     std::strncpy(MainTag,reinterpret_cast<const char*>(&ConstDataTag[strlen((const char*)ConstDataTag)-16]),16);
     EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
     EVP_DecryptInit_ex(ctx, CipherType, NULL, key, (unsigned char*)IV.c_str());
-    unsigned char PlainTxt[strlen(MainData)];
+    unsigned char* PlainTxt = (unsigned char*)std::calloc(strlen(MainData),sizeof(*PlainTxt));
     int OutputLen;
     EVP_DecryptUpdate(ctx, PlainTxt, &OutputLen, reinterpret_cast<const unsigned char *>(MainData), strlen(MainData));
     EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_AEAD_SET_TAG, 16, (void*)MainTag);
     int TagValid = EVP_DecryptFinal_ex(ctx, PlainTxt, &OutputLen);
     EVP_CIPHER_CTX_free(ctx);
+    std::string ReturnData = std::string(reinterpret_cast<const char*>(PlainTxt));
     delete[] MainData;
     delete[] MainTag;
+    std::free(PlainTxt);
     if(TagValid == 0) {
         throw std::runtime_error("Tag Validation Failed");
     }
-    return std::string(reinterpret_cast<const char*>(PlainTxt));
+    return ReturnData;
 }
 int SynAES::decrypt(std::string Data, std::string IV,std::string * PlainText) {
     std::vector<BYTE> MainDataAndTag = base64_decode(Data);
@@ -65,7 +69,7 @@ int SynAES::decrypt(std::string Data, std::string IV,std::string * PlainText) {
     std::strncpy(MainTag,reinterpret_cast<const char*>(&ConstDataTag[strlen((const char*)ConstDataTag)-16]),16);
     EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
     EVP_DecryptInit_ex(ctx, CipherType, NULL, key, (unsigned char*)IV.c_str());
-    unsigned char PlainTxt[strlen(MainData)];
+    unsigned char* PlainTxt = (unsigned char*)std::calloc(strlen(MainData),sizeof(*PlainTxt));
     int OutputLen;
     EVP_DecryptUpdate(ctx, PlainTxt, &OutputLen, reinterpret_cast<const unsigned char *>(MainData), strlen(MainData));
     EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_AEAD_SET_TAG, 16, (void*)MainTag);
@@ -74,6 +78,7 @@ int SynAES::decrypt(std::string Data, std::string IV,std::string * PlainText) {
     *PlainText = std::string(reinterpret_cast<const char*>(PlainTxt),strlen(MainData));
     delete[] MainData;
     delete[] MainTag;
+    std::free(PlainTxt);
     //std::memcpy(PlainText,&StrPlainTxt,sizeof(StrPlainTxt));
     return TagValid;
 }

@@ -51,7 +51,7 @@ std::string SynAES::decrypt(std::string Data, std::string IV) {
     EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_AEAD_SET_TAG, 16, (void*)MainTag);
     int TagValid = EVP_DecryptFinal_ex(ctx, PlainTxt, &OutputLen);
     EVP_CIPHER_CTX_free(ctx);
-    std::string ReturnData = std::string(reinterpret_cast<const char*>(PlainTxt));
+    std::string ReturnData = std::string(reinterpret_cast<const char*>(PlainTxt),MainDataAndTag.size()-16);
     delete[] MainData;
     delete[] MainTag;
     delete[] PlainTxt;

@@ -56,6 +56,27 @@ std::string SynAES::decrypt(std::string Data, std::string IV) {
     }
     return std::string(reinterpret_cast<const char*>(PlainTxt));
 }
+int SynAES::decrypt(std::string Data, std::string IV,std::string * PlainText) {
+    std::vector<BYTE> MainDataAndTag = base64_decode(Data);
+    const unsigned char* ConstDataTag = MainDataAndTag.data();
+    char* MainData = new char[strlen((const char*)ConstDataTag)-16];
+    char* MainTag = new char[16];
+    std::strncpy(MainData,reinterpret_cast<const char*>(ConstDataTag),strlen((const char*)ConstDataTag)-16); //const_cast
+    std::strncpy(MainTag,reinterpret_cast<const char*>(&ConstDataTag[strlen((const char*)ConstDataTag)-16]),16);
+    EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
+    EVP_DecryptInit_ex(ctx, CipherType, NULL, key, (unsigned char*)IV.c_str());
+    unsigned char PlainTxt[strlen(MainData)];
+    int OutputLen;
+    EVP_DecryptUpdate(ctx, PlainTxt, &OutputLen, reinterpret_cast<const unsigned char *>(MainData), strlen(MainData));
+    EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_AEAD_SET_TAG, 16, (void*)MainTag);
+    int TagValid = EVP_DecryptFinal_ex(ctx, PlainTxt, &OutputLen);
+    EVP_CIPHER_CTX_free(ctx);
+    *PlainText = std::string(reinterpret_cast<const char*>(PlainTxt),strlen(MainData));
+    delete[] MainData;
+    delete[] MainTag;
+    //std::memcpy(PlainText,&StrPlainTxt,sizeof(StrPlainTxt));
+    return TagValid;
+}
 
 
 // Example Usages
@@ -63,6 +84,8 @@ int main() {
     SynAES * crypt = new SynAES("0123456789ABCDEF0123456789ABCDEF");
     std::cout << "Encryption: " << crypt->encrypt("YO SUP","0123456789AB").c_str() << std::endl;
     std::cout << "Decryption: " << crypt->decrypt("lyiAqsYTgCuWO0WcO7HKJ8IqZwwZWg==","0123456789AB").c_str() << std::endl;
+    std::string PlaintxtData;
+    std::cout << "Decryption (method 2) = Tag Validation: " << std::to_string(crypt->decrypt("lyiAqsYTgCuWO0WcO7HKJ8IqZwwZWg==","0123456789AB",&PlaintxtData)).c_str() << " | Data: " << PlaintxtData.c_str() << std::endl;
     std::string Pause;
     std::cin >> Pause;
 }

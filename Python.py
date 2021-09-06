@@ -14,7 +14,7 @@ class SynAES:
         plaintxt = cipher.decrypt(data[:len(data)-16])
         cipher.verify(data[-16:])
         return plaintxt.decode("utf-8")
-    def tagdecrypt(self,data,iv):
+    def handled_decrypt(self,data,iv):
         # Encryption Method
         data = base64.b64decode(data)
         cipher = AES.new(self.key,AES.MODE_GCM,nonce=iv.encode("utf-8"))
@@ -35,7 +35,7 @@ class SynAES:
 crypt = SynAES("0123456789ABCDEF0123456789ABCDEF")
 print(crypt.encrypt("YO SUP","0123456789AB"))
 print(crypt.decrypt("lyiAqsYTgCuWO0WcO7HKJ8IqZwwZWg==","0123456789AB"))
-print(crypt.tagdecrypt("lyiAqsYTgCuWO0WcO7HKJ8IqZwwZWg==","0123456789AB"))
+print(crypt.handled_decrypt("lyiAqsYTgCuWO0WcO7HKJ8IqZwwZWg==","0123456789AB"))
 # Difference between the decrypt methods is that regular decrypt will only return data and throws an error when tag is mismatched
-# tagdecrypt on the other hand will handle it for you and returns a table containing both the tag's validation status and the data
-# tagdecrypt allows you to use the data even if the tag validation fails but I suggest you NOT to because the data is likely tampered
+# handled_decrypt on the other hand will handle it for you and returns a table containing both the tag's validation status and the data
+# handled_decrypt allows you to use the data even if the tag validation fails but it recommended that the data should not be trusted as it likely tampered

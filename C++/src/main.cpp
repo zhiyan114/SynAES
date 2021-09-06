@@ -39,10 +39,10 @@ std::string SynAES::encrypt(std::string Data, std::string IV) {
 std::string SynAES::decrypt(std::string Data, std::string IV) {
     std::vector<BYTE> MainDataAndTag = base64_decode(Data);
     const unsigned char* ConstDataTag = MainDataAndTag.data();
-    char* MainData = new char[strlen((const char*)ConstDataTag)-16];
+    char* MainData = new char[MainDataAndTag.size()-16];
     char* MainTag = new char[16];
-    std::strncpy(MainData,reinterpret_cast<const char*>(ConstDataTag),strlen((const char*)ConstDataTag)-16); //const_cast
-    std::strncpy(MainTag,reinterpret_cast<const char*>(&ConstDataTag[strlen((const char*)ConstDataTag)-16]),16);
+    std::strncpy(MainData,reinterpret_cast<const char*>(ConstDataTag),MainDataAndTag.size()-16); //const_cast
+    std::strncpy(MainTag,reinterpret_cast<const char*>(&ConstDataTag[MainDataAndTag.size()-16]),16);
     EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
     EVP_DecryptInit_ex(ctx, CipherType, NULL, key, (unsigned char*)IV.c_str());
     unsigned char* PlainTxt = new unsigned char[strlen(MainData)+16];
@@ -63,10 +63,10 @@ std::string SynAES::decrypt(std::string Data, std::string IV) {
 int SynAES::decrypt(std::string Data, std::string IV,std::string * PlainText) {
     std::vector<BYTE> MainDataAndTag = base64_decode(Data);
     const unsigned char* ConstDataTag = MainDataAndTag.data();
-    char* MainData = new char[strlen((const char*)ConstDataTag)-16];
+    char* MainData = new char[MainDataAndTag.size()-16];
     char* MainTag = new char[16];
-    std::strncpy(MainData,reinterpret_cast<const char*>(ConstDataTag),strlen((const char*)ConstDataTag)-16); //const_cast
-    std::strncpy(MainTag,reinterpret_cast<const char*>(&ConstDataTag[strlen((const char*)ConstDataTag)-16]),16);
+    std::strncpy(MainData,reinterpret_cast<const char*>(ConstDataTag),MainDataAndTag.size()-16); //const_cast
+    std::strncpy(MainTag,reinterpret_cast<const char*>(&ConstDataTag[MainDataAndTag.size()-16]),16);
     EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
     EVP_DecryptInit_ex(ctx, CipherType, NULL, key, (unsigned char*)IV.c_str());
     unsigned char* PlainTxt = new unsigned char[strlen(MainData)+16];

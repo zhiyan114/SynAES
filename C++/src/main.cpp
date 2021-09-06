@@ -34,11 +34,6 @@ std::string SynAES::encrypt(std::string Data, std::string IV) {
     EVP_CIPHER_CTX_free(ctx);
     return base64_encode(CipherTxt,sizeof(CipherTxt));
 }
-void specstrcpy(char* dest,const char* src, int len) {
-    for(int i=0;i<len;i++) {
-        dest[i] = src[i];
-    }
-}
 std::string SynAES::decrypt(std::string Data, std::string IV) {
     std::vector<BYTE> MainDataAndTag = base64_decode(Data);
     const unsigned char* ConstDataTag = MainDataAndTag.data();

@@ -33,7 +33,7 @@ std::string SynAES::encrypt(std::string Data, std::string IV) {
     EVP_CIPHER_CTX_ctrl(ctx,EVP_CTRL_AEAD_GET_TAG, 16, &CipherTxt[strlen(Data.c_str())]);
     EVP_CIPHER_CTX_free(ctx);
     std::string ReturnData = base64_encode(CipherTxt,strlen(Data.c_str())+16);
-    std::free(CipherTxt);
+    delete[] CipherTxt;
     return ReturnData;
 }
 std::string SynAES::decrypt(std::string Data, std::string IV) {
@@ -54,7 +54,7 @@ std::string SynAES::decrypt(std::string Data, std::string IV) {
     std::string ReturnData = std::string(reinterpret_cast<const char*>(PlainTxt));
     delete[] MainData;
     delete[] MainTag;
-    std::free(PlainTxt);
+    delete[] PlainTxt;
     if(TagValid == 0) {
         throw std::runtime_error("Tag Validation Failed");
     }
@@ -78,7 +78,7 @@ int SynAES::decrypt(std::string Data, std::string IV,std::string * PlainText) {
     *PlainText = std::string(reinterpret_cast<const char*>(PlainTxt),strlen(MainData));
     delete[] MainData;
     delete[] MainTag;
-    std::free(PlainTxt);
+    delete[] PlainTxt;
     //std::memcpy(PlainText,&StrPlainTxt,sizeof(StrPlainTxt));
     return TagValid;
 }

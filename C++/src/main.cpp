@@ -45,9 +45,9 @@ std::string SynAES::decrypt(std::string Data, std::string IV) {
     std::strncpy(MainTag,reinterpret_cast<const char*>(&ConstDataTag[MainDataAndTag.size()-16]),16);
     EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
     EVP_DecryptInit_ex(ctx, CipherType, NULL, key, (unsigned char*)IV.c_str());
-    unsigned char* PlainTxt = new unsigned char[strlen(MainData)+16];
+    unsigned char* PlainTxt = new unsigned char[MainDataAndTag.size()-16];
     int OutputLen;
-    EVP_DecryptUpdate(ctx, PlainTxt, &OutputLen, reinterpret_cast<const unsigned char *>(MainData), strlen(MainData));
+    EVP_DecryptUpdate(ctx, PlainTxt, &OutputLen, reinterpret_cast<const unsigned char *>(MainData), MainDataAndTag.size()-16);
     EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_AEAD_SET_TAG, 16, (void*)MainTag);
     int TagValid = EVP_DecryptFinal_ex(ctx, PlainTxt, &OutputLen);
     EVP_CIPHER_CTX_free(ctx);
@@ -69,13 +69,13 @@ int SynAES::decrypt(std::string Data, std::string IV,std::string * PlainText) {
     std::strncpy(MainTag,reinterpret_cast<const char*>(&ConstDataTag[MainDataAndTag.size()-16]),16);
     EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
     EVP_DecryptInit_ex(ctx, CipherType, NULL, key, (unsigned char*)IV.c_str());
-    unsigned char* PlainTxt = new unsigned char[strlen(MainData)+16];
+    unsigned char* PlainTxt = new unsigned char[MainDataAndTag.size()-16];
     int OutputLen;
-    EVP_DecryptUpdate(ctx, PlainTxt, &OutputLen, reinterpret_cast<const unsigned char *>(MainData), strlen(MainData));
+    EVP_DecryptUpdate(ctx, PlainTxt, &OutputLen, reinterpret_cast<const unsigned char *>(MainData), MainDataAndTag.size()-16);
     EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_AEAD_SET_TAG, 16, (void*)MainTag);
     int TagValid = EVP_DecryptFinal_ex(ctx, PlainTxt, &OutputLen);
     EVP_CIPHER_CTX_free(ctx);
-    *PlainText = std::string(reinterpret_cast<const char*>(PlainTxt),strlen(MainData));
+    *PlainText = std::string(reinterpret_cast<const char*>(PlainTxt),MainDataAndTag.size()-16);
     delete[] MainData;
     delete[] MainTag;
     delete[] PlainTxt;

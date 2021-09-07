@@ -6,7 +6,7 @@
 class SynAES {
     public:
       SynAES(std::string Key);
-      std::string encrypt(std::string Data, std::string IV);
+      std::string encrypt(std::string Data, std::string IV,int DataLen);
       std::string decrypt(std::string Data, std::string IV);
       int decrypt(std::string Data, std::string IV, std::string * PlainText);
     private:

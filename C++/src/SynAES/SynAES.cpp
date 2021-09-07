@@ -25,14 +25,15 @@ SynAES::SynAES(std::string MainKey) {
 }
 std::string SynAES::encrypt(std::string Data, std::string IV) {
     EVP_CIPHER_CTX * ctx = EVP_CIPHER_CTX_new();
-    EVP_EncryptInit_ex(ctx, CipherType, NULL, key, (unsigned char*)IV.c_str());
-    unsigned char* CipherTxt = new unsigned char[strlen(Data.c_str())+16];
+    
+    EVP_EncryptInit_ex(ctx, CipherType, NULL, key, reinterpret_cast<unsigned char*>(IV.c_str()));
+    unsigned char* CipherTxt = new unsigned char[Data.length()+16];
     int CipherSize;
-    EVP_EncryptUpdate(ctx, CipherTxt, &CipherSize, (unsigned char*)Data.c_str(), strlen(Data.c_str()));
+    EVP_EncryptUpdate(ctx, CipherTxt, &CipherSize, reinterpret_cast<unsigned char*>(Data.c_str()), Data.length());
     EVP_EncryptFinal_ex(ctx, CipherTxt, &CipherSize);
-    EVP_CIPHER_CTX_ctrl(ctx,EVP_CTRL_AEAD_GET_TAG, 16, &CipherTxt[strlen(Data.c_str())]);
+    EVP_CIPHER_CTX_ctrl(ctx,EVP_CTRL_AEAD_GET_TAG, 16, &CipherTxt[Data.length()]);
     EVP_CIPHER_CTX_free(ctx);
-    std::string ReturnData = base64_encode(CipherTxt,strlen(Data.c_str())+16);
+    std::string ReturnData = base64_encode(CipherTxt,Data.length()+16);
     delete[] CipherTxt;
     return ReturnData;
 }
@@ -44,7 +45,7 @@ std::string SynAES::decrypt(std::string Data, std::string IV) {
     std::strncpy(MainData,reinterpret_cast<const char*>(ConstDataTag),MainDataAndTag.size()-16); //const_cast
     std::strncpy(MainTag,reinterpret_cast<const char*>(&ConstDataTag[MainDataAndTag.size()-16]),16);
     EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
-    EVP_DecryptInit_ex(ctx, CipherType, NULL, key, (unsigned char*)IV.c_str());
+    EVP_DecryptInit_ex(ctx, CipherType, NULL, key, reinterpret_cast<unsigned char*>(IV.c_str()));
     unsigned char* PlainTxt = new unsigned char[MainDataAndTag.size()-16];
     int OutputLen;
     EVP_DecryptUpdate(ctx, PlainTxt, &OutputLen, reinterpret_cast<const unsigned char *>(MainData), MainDataAndTag.size()-16);
@@ -68,7 +69,7 @@ int SynAES::decrypt(std::string Data, std::string IV,std::string * PlainText) {
     std::strncpy(MainData,reinterpret_cast<const char*>(ConstDataTag),MainDataAndTag.size()-16); //const_cast
     std::strncpy(MainTag,reinterpret_cast<const char*>(&ConstDataTag[MainDataAndTag.size()-16]),16);
     EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
-    EVP_DecryptInit_ex(ctx, CipherType, NULL, key, (unsigned char*)IV.c_str());
+    EVP_DecryptInit_ex(ctx, CipherType, NULL, key, reinterpret_cast<unsigned char*>(IV.c_str()));
     unsigned char* PlainTxt = new unsigned char[MainDataAndTag.size()-16];
     int OutputLen;
     EVP_DecryptUpdate(ctx, PlainTxt, &OutputLen, reinterpret_cast<const unsigned char *>(MainData), MainDataAndTag.size()-16);
